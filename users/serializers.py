@@ -2,7 +2,7 @@ from rest_framework import serializers
 from .models import CustomUser
 from django.contrib.auth.password_validation import validate_password
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-
+from django.contrib.auth import authenticate
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -29,10 +29,17 @@ class RegisterSerializer(serializers.ModelSerializer):
         return user
     
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
-    def validate(self, attrs):
-        data = super().validate(attrs)
+    username_field = CustomUser.EMAIL_FIELD
 
-        user = self.user
+    def validate(self, attrs):
+        email = attrs.get("email")
+        password = attrs.get("password")
+
+        user = authenticate(request=self.context.get('request'), email=email, password=password)
+        if not user:
+            raise serializers.ValidationError('Invalid email or password')
+
+        data = super().validate(attrs)
         data.update({
             'user': {
                 'id': user.id,
@@ -45,3 +52,9 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
             }
         })
         return data
+
+    def to_internal_value(self, data):
+        # Accept 'email' instead of 'username'
+        ret = super().to_internal_value(data)
+        ret['username'] = data.get('email')
+        return ret
