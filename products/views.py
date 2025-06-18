@@ -9,6 +9,11 @@ class CategoryViewSet(viewsets.ModelViewSet):
     serializer_class = CategorySerializer
     queryset = Category.objects.all()
     
+    def get_queryset(self):
+        if self.action == 'list':
+            return Category.objects.filter(parent__isnull=True)
+        return Category.objects.all()
+    
 class ProductViewSet(viewsets.ModelViewSet):
     serializer_class = ProductSerializer
     queryset = Product.objects.all()

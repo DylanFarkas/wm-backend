@@ -1,10 +1,17 @@
 from rest_framework import serializers
 from .models import Category, Product, Productvariant, ProductImage, ProductSize
 
+
 class CategorySerializer(serializers.ModelSerializer):
+    subcategories = serializers.SerializerMethodField()
+
     class Meta:
         model = Category
-        fields = '__all__'
+        fields = ['id', 'name', 'description', 'parent', 'subcategories']
+
+    def get_subcategories(self, obj):
+        subcats = obj.subcategories.all()
+        return CategorySerializer(subcats, many=True).data
         
 class ProductImageSerializer(serializers.ModelSerializer):
     class Meta:
@@ -26,8 +33,8 @@ class ProductVariantSerializer(serializers.ModelSerializer):
           
 class ProductSerializer(serializers.ModelSerializer):
     variants = ProductVariantSerializer(many=True, read_only=True)
-    category = serializers.PrimaryKeyRelatedField(queryset=Category.objects.all())  # o usa `PrimaryKeyRelatedField` si prefieres
-    category_detail = serializers.StringRelatedField(source='category', read_only=True)
+    category = serializers.PrimaryKeyRelatedField(queryset=Category.objects.all()) 
+    category_detail = CategorySerializer(source='category', read_only=True)
 
     class Meta:
         model = Product
