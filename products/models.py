@@ -64,7 +64,7 @@ class ProductSize(models.Model):
     
 class ProductImage(models.Model):
     variant = models.ForeignKey(Productvariant, related_name='images', on_delete=models.CASCADE)
-    image = models.ImageField(upload_to='product_images/', blank=True, null=True)
+    image = models.ImageField(upload_to='imgs/product_images/', blank=True, null=True)
     
     def __str__(self):
         return f"Imagen de {self.variant}"
