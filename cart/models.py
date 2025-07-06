@@ -7,7 +7,7 @@ class Cart(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Cart for {self.user.username}"
+        return f"Cart - {self.user.username}"
     
     def total_price(self):
         return sum(item.subtotal() for item in self.items.all())
@@ -27,4 +27,4 @@ class CartItem(models.Model):
         return (price - discount) * self.quantity
 
     def __str__(self):
-        return f"{self.quantity} x {self.variant} - {self.size.size}"
+        return f"{self.quantity} x {self.variant} - {self.size.size} - {self.cart}"
