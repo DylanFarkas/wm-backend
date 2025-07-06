@@ -25,6 +25,26 @@ class CartItemSerializer(serializers.ModelSerializer):
 
     def get_subtotal(self, obj):
         return obj.subtotal()
+
+    def validate(self, data):
+        variant = data.get('variant')
+        size = data.get('size')
+        quantity = data.get('quantity')
+
+        if not variant or not size:
+            raise serializers.ValidationError("Se requiere una variante y una talla válida.")
+
+        try:
+            product_size = variant.sizes.get(id=size.id)
+        except ProductSize.DoesNotExist:
+            raise serializers.ValidationError("La talla no pertenece a la variante seleccionada.")
+
+        if quantity > product_size.stock:
+            raise serializers.ValidationError(
+                f"La cantidad ({quantity}) excede el stock disponible ({product_size.stock}) para esta talla."
+            )
+
+        return data
     
 class CartSerializer(serializers.ModelSerializer):
     items = CartItemSerializer(many=True, read_only=True)

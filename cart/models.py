@@ -22,9 +22,7 @@ class CartItem(models.Model):
         unique_together = ('cart', 'variant', 'size')
         
     def subtotal(self):
-        price = self.variant.product.price
-        discount = self.variant.product.discount
-        return (price - discount) * self.quantity
+        return self.variant.final_price * self.quantity
 
     def __str__(self):
         return f"{self.quantity} x {self.variant} - {self.size.size} - {self.cart}"

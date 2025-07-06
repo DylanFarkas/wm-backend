@@ -15,7 +15,6 @@ class Product(models.Model):
     name = models.CharField(max_length=30)
     description = models.TextField(blank=True)
     price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    discount = models.DecimalField(max_digits=5, decimal_places=2, default=0.0)
     is_active = models.BooleanField(default=True, editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
     
@@ -31,9 +30,21 @@ class Product(models.Model):
 class Productvariant(models.Model):
     product = models.ForeignKey(Product, related_name='variants',on_delete=models.CASCADE)
     color = models.CharField(max_length=20)
+    discount = models.DecimalField(max_digits=5, decimal_places=2, default=0.0)
     
     def has_stock(self):
         return any(size.stock > 0 for size in self.sizes.all())
+    
+    @property
+    def price(self):
+        # Usamos el precio base del producto
+        return self.product.price
+
+    @property
+    def final_price(self):
+        if self.discount:
+            return self.price * (1 - self.discount / 100)
+        return self.price
     
     def __str__(self):
         return f"{self.product.name} - {self.color}"
