@@ -28,9 +28,13 @@ class ProductVariantSerializer(serializers.ModelSerializer):
     sizes = ProductSizeSerializer(many=True)
     id = serializers.IntegerField(required=False)
     images = ProductImageSerializer(many=True, required=False)
+    final_price = serializers.SerializerMethodField()
+    discount_label = serializers.SerializerMethodField()
+
+    
     class Meta:
         model = Productvariant
-        fields = ['id', 'color', 'sizes', 'images'] 
+        fields = ['id', 'color', 'discount', 'discount_label', 'final_price', 'sizes', 'images'] 
         
     def create(self, validated_data):
         sizes_data = validated_data.pop('sizes')
@@ -42,6 +46,8 @@ class ProductVariantSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         sizes_data = validated_data.pop('sizes', [])
 
+        discount = validated_data.get('discount', instance.discount)
+        instance.discount = discount
         instance.color = validated_data.get('color', instance.color)
         instance.save()
 
@@ -65,6 +71,14 @@ class ProductVariantSerializer(serializers.ModelSerializer):
                 ProductSize.objects.create(variant=instance, **size_data)
 
         return instance
+    
+    def get_final_price(self, obj):
+        return round(obj.final_price, 2)
+    
+    def get_discount_label(self, obj):
+        if obj.discount > 0:
+            return f"{obj.discount}%"
+        return "Sin descuento"
           
 class ProductSerializer(serializers.ModelSerializer):
     variants = ProductVariantSerializer(many=True)
@@ -74,7 +88,7 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = [
-            'id', 'name', 'description', 'discount', 'price',
+            'id', 'name', 'description', 'price',
             'is_active', 'created_at', 'category', 'variants',
             'category_detail'
         ]
