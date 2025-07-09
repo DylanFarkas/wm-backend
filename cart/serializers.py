@@ -15,16 +15,20 @@ class CartItemSerializer(serializers.ModelSerializer):
         write_only=True
     )
 
+    product_name = subtotal = serializers.SerializerMethodField() 
     variant = ProductVariantSerializer(read_only=True)
     size = ProductSizeSerializer(read_only=True)
     subtotal = serializers.SerializerMethodField()
 
     class Meta:
         model = CartItem
-        fields = ['id', 'variant_id', 'size_id', 'variant', 'size', 'quantity', 'subtotal']
+        fields = ['id', 'product_name', 'variant_id', 'size_id', 'variant', 'size', 'quantity', 'subtotal']
 
     def get_subtotal(self, obj):
         return obj.subtotal()
+    
+    def get_product_name(self, obj):
+        return obj.variant.product.name
 
     def validate(self, data):
         variant = data.get('variant')
