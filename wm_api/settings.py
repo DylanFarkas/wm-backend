@@ -25,9 +25,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-=&)#gjxg$%38f!j^zxe&(($c(0a+ymw^b3%ka#+c&(ch81dh!k'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['143.198.171.53', 'wmsiteweb.xyz', 'www.wmsiteweb.xyz']
 
 
 # Application definition
@@ -148,7 +148,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -157,6 +158,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:5173',
+    'https://wm-one.vercel.app/'
+    'https://wmsiteweb.xyz',
+    'https://www.wmsiteweb.xyz',
 ]
 
 MEDIA_URL = '/media/'
