@@ -163,5 +163,7 @@ CORS_ALLOWED_ORIGINS = [
     'https://www.wmsiteweb.xyz',
 ]
 
+CORS_ALLOW_CREDENTIALS = True
+
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
